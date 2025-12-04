@@ -21,15 +21,16 @@ def extract_text_from_pdf(file_path):
     return extracted_data
 
 if __name__ == "__main__":
-    test_file = DATA_DIR / "raw" / "nvidia_10K.pdf" 
+    input_file = DATA_DIR / "raw" / "nvidia_10K.pdf" 
+    output_file = DATA_DIR / "processed" / "nvidia_10k_raw.json"
     
-    print(f"Processing {test_file}...")
-    data = extract_text_from_pdf(test_file)
+    print(f"Processing {input_file}...")
+    data = extract_text_from_pdf(input_file)
     
-    # 3. Print results to prove it worked
-    print(f"Success! Extracted {len(data)} pages.")
-    print("Preview of Page 1:", data[0]['text'][:100])
-
+    print(f"Saving data to {output_file}...")
+    with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+    print(f"Done! Saved {len(data)} pages.")
 
 
 
