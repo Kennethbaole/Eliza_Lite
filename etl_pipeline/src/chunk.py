@@ -42,22 +42,32 @@ def chunk_text(text, target_word_count = 200, overlap = 20): # function that wil
 
 
 if __name__ == "__main__":
-    input_file = DATA_DIR / "processed" / "nvidia_10k_raw.json"
+    input_folder = DATA_DIR / "processed" 
+    all_chunks = [] # master list to store all of the chunks 
 
-    # loading the data 
-    with open(input_file, 'r') as f:
-        raw_data = json.load(f)
-    # picking a page:
-    sample_text = raw_data[5]['text']
-    # cleaning the text with 'clean_text' function
-    cleaned_sample = clean_text(sample_text)
-    # chunking the text with 'chunk_text' function 
-    chunks = chunked_text = chunk_text(cleaned_sample, target_word_count=50, overlap = 10)
-    # verifying:
-    print(f"\nCreated {len(chunks)} chunks from this page.")
-    print("--- CHUNK 1 (Start) ---")
-    print(chunks[0])
+    file_data = list(input_folder.glob("*.json")) # getting a list of all the .json files in the processed folder
+
+    for file_path in file_data: # looping through the file paths 
+
+        with open(file_path, 'r', encoding="utf-8") as f: # open and load the file
+            current_file_page = json.load(f)
+
+        for page_item in current_file_page:
+            text_to_clean = page_item['text']
+            cleaned_text = clean_text(text_to_clean)
+            chunked_text = chunk_text(cleaned_text)
+
+            for i, chunk_string in enumerate(chunked_text):
+                record = {
+                    "id": f"{page_item['source']}_{page_item['page']}_{i}",
+                    "text": chunk_string,
+                    "page": page_item['page'],
+                    "source": page_item['source']
+                }
+                all_chunks.append(record)
+
+    output_file = DATA_DIR / "processed" / "all_master_chunks.json"
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(all_chunks, f, indent=4)
+
     
-    print("\n--- CHUNK 2 (Check for Overlap) ---")
-    print(chunks[1])
-
