@@ -21,16 +21,21 @@ def extract_text_from_pdf(file_path):
     return extracted_data
 
 if __name__ == "__main__":
-    input_file = DATA_DIR / "raw" / "nvidia_10K.pdf" 
-    output_file = DATA_DIR / "processed" / "nvidia_10k_raw.json"
-    
-    print(f"Processing {input_file}...")
-    data = extract_text_from_pdf(input_file)
-    
-    print(f"Saving data to {output_file}...")
-    with open(output_file, "w", encoding="utf-8") as f:
+    raw_folder = DATA_DIR / "raw"
+    processed_folder = DATA_DIR / "processed"
+
+    pdf_files = list(raw_folder.glob("*.pdf")) # getting a list of all the pdfs in the raw folder
+    for pdf_path in pdf_files:
+        print(f"Processing {pdf_path.name}...")
+        data = extract_text_from_pdf(pdf_path) # running extraction function 
+        output_filename = f"{pdf_path.stem}.json" # if input = "apple.pdf", output = "apple.json"
+        output_path = processed_folder / output_filename
+
+        print(f"Saving to -> {output_filename}...")
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4)
-    print(f"Done! Saved {len(data)} pages.")
+
+    print("Batch processing complete!")
 
 
 
