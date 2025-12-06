@@ -29,16 +29,16 @@ def clean_text(text):
     
     return text.strip()
 
-def chunk_text(text, target_word_count = 200, overlap = 20):
+def chunk_text(text, target_word_count = 200, overlap = 20): # function that will chunk the text 
     split_text = text.split() # splitting text into list of words
     chunks = [] # list to hold chunk
-    step = target_word_count - overlap
-    for i in range(0, len(split_text), step):
-        chunk_end = i + target_word_count
-        chunk_words = split_text[i : chunk_end]
-        chunk_string = " ".join(chunk_words)
-        chunks.append(chunk_string)
-    return chunks
+    step = target_word_count - overlap # calculating each 'step' 
+    for i in range(0, len(split_text), step): # looping through the split_text list 
+        chunk_end = i + target_word_count # calculating the end of a chunk 
+        chunk_words = split_text[i : chunk_end] # establishing the current chunk of words from i -> the calculated end of chunk 
+        chunk_string = " ".join(chunk_words) # join the different strings into one long string 
+        chunks.append(chunk_string) # append that string into the chunks list 
+    return chunks # return the list of chunks 
 
 
 if __name__ == "__main__":
@@ -47,8 +47,17 @@ if __name__ == "__main__":
     # loading the data 
     with open(input_file, 'r') as f:
         raw_data = json.load(f)
-    # cleaning the text 
-    sample_text = raw_data[0]['text']
+    # picking a page:
+    sample_text = raw_data[5]['text']
+    # cleaning the text with 'clean_text' function
     cleaned_sample = clean_text(sample_text)
-    chunked_text = chunk_text(cleaned_sample)
+    # chunking the text with 'chunk_text' function 
+    chunks = chunked_text = chunk_text(cleaned_sample, target_word_count=50, overlap = 10)
+    # verifying:
+    print(f"\nCreated {len(chunks)} chunks from this page.")
+    print("--- CHUNK 1 (Start) ---")
+    print(chunks[0])
+    
+    print("\n--- CHUNK 2 (Check for Overlap) ---")
+    print(chunks[1])
 
