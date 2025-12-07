@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # looks up the original text after FAISS finds a match 
 
     for item in tqdm(chunks): # tqdm wraps the list to show a progress bar in terminal 
-        try:
+        try: # if api fails, lists aren't updated 
             vector = get_embedding(item['text'])
             vector_list.append(vector)
             metadata_list.append(item)
