@@ -34,8 +34,9 @@ if __name__ == "__main__":
     with open(input_file, 'r') as f:
         chunks = json.load(f)
 
-    vector_list = []
-    metadata_list = []
+    vector_list = [] # bucket A for database
+    metadata_list = [] # bucket B for the app 
+    # looks up the original text after FAISS finds a match 
 
     for item in tqdm(chunks): # tqdm wraps the list to show a progress bar in terminal 
         try:
@@ -52,6 +53,8 @@ if __name__ == "__main__":
     # IndexFlatL2 -> when search, calculate distance between vectors to find closest match 
     index = faiss.IndexFlatL2(dimension) # creating an empty database expecting 1536 - dim vectors
     index.add(vectors) # Add matrix to database 
+
+    # saving index and metadata 
     faiss.write_index(index, str(output_dir / "eliza.index"))
     with open(output_dir / "metadata.json", "w") as f:
         json.dump(metadata_list, f)
