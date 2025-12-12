@@ -27,11 +27,40 @@ def load_index():
 
 def search(query): # need to search for vector representation, not string 
     vector = get_embedding(query) # user text converted to vector
-    query_vector = np.array([vector]).astype("float32")
+
+    query_vector = np.array([vector]).astype("float32") # reshaping into 2d matrix FAISS
+    distances, indices = INDEX.search(query_vector, k = 5) # searching the index and returning top 5 matches
+
+    results = [] # retrieving actual text 
+    for i in indices[0]:
+        if i != -1:
+            results.append(METADATA[i])
+
+    return results
 
 
 def generate_answer(query, context):
-    pass
+    context_str = "\n\n".join([f"Source (Page {c['page']}): {c['text']}" for c in context])
+
+    # system's rules
+    system_prompt = {
+        "You are Eliza, a helpful financial analyst for BNY Mellon. "
+        "Answer the user's question based ONLY on the provided context below. "
+        "If the answer is not in the context, say 'I cannot find that information in the documents.' "
+        "Keep your answer professional and concise."
+    }
+
+    # User prompt:
+    user_message = f"Context:\n{context_str}\n\nQuestion: {query}"
+
+    # calling openAI
+    response = client.chat.completions.create(
+        model="gpt-4o"
+        message=[
+            {"role", "system", "content", system_prompt},
+            {"role": "user", "content": user_message}
+        ]
+    )
 
 if __name__ == "__main__":
     pass
